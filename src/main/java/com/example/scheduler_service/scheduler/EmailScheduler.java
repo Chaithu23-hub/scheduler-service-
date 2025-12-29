@@ -2,9 +2,11 @@ package com.example.scheduler_service.scheduler;
 
 import com.example.scheduler_service.entity.ActiveRegistrationAccount;
 import com.example.scheduler_service.repository.ActiveRegistrationAccountRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -16,6 +18,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class EmailScheduler {
 
+    private final TaskScheduler taskScheduler;
     private final RestTemplate restTemplate;
     private final ActiveRegistrationAccountRepository repository;
 
@@ -34,7 +37,14 @@ public class EmailScheduler {
     @Value("${scheduler.fixed-rate-ms}")
     private long fixedRateMs;
 
-    @Scheduled(fixedRateString = "${scheduler.fixed-rate-ms}")
+    @PostConstruct
+    public void scheduleJob() {
+
+        taskScheduler.scheduleAtFixedRate(
+                this::triggerPendingUserEmails,
+                Duration.ofMillis(fixedRateMs)
+        );
+    }
     public void triggerPendingUserEmails() {
 
         String url =
