@@ -34,7 +34,7 @@ public class EmailScheduler {
     @Value("${scheduler.fixed-rate-ms}")
     private long fixedRateMs;
 
-    @Scheduled(fixedRate = 10 * 60 * 1000)
+    @Scheduled(fixedRateString = "${scheduler.fixed-rate-ms}")
     public void triggerPendingUserEmails() {
 
         String url =
