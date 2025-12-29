@@ -25,4 +25,6 @@ public class ActiveRegistrationAccount {
     private LocalDateTime calledAt;
 
     private String response;
+
+    private LocalDateTime nextScheduledAt;
 }
